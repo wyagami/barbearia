@@ -9,7 +9,6 @@ anyio==4.8.0
 arabic-reshaper==3.0.0
 asn1crypto==1.5.1
 attrs==25.1.0
-av==10.0.0
 beautifulsoup4==4.13.3
 blinker==1.9.0
 cachetools==5.5.1
