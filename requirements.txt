@@ -3,7 +3,7 @@ aiortc==1.10.1
 altair==5.5.0
 anyio==4.9.0
 attrs==25.3.0
-av==10.0.0
+av==14.4.0
 blinker==1.9.0
 cachetools==5.5.2
 certifi==2025.4.26
