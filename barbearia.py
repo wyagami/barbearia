@@ -213,7 +213,7 @@ with col1:
                 webrtc_ctx.video_processor.take_snapshot = True
                 st.info("Tirando foto... Aguarde...")
                 time.sleep(1)  # Pequeno delay para capturar a imagem
-                st.experimental_rerun()
+                st.rerun()
         
         # Se uma foto foi tirada, exiba-a
         if webrtc_ctx.video_processor and webrtc_ctx.video_processor.snapshot is not None:
@@ -289,12 +289,12 @@ with col2:
                         if st.button("⬅️ Anterior", key=f"prev_{category_name}", 
                                    disabled=st.session_state[f'style_page_{category_name}'] == 0):
                             st.session_state[f'style_page_{category_name}'] = max(0, st.session_state[f'style_page_{category_name}'] - 1)
-                            st.experimental_rerun()
+                            st.rerun()
                     with col_nav2:
                         if st.button("Próximo ➡️", key=f"next_{category_name}", 
                                    disabled=st.session_state[f'style_page_{category_name}'] >= total_pages - 1):
                             st.session_state[f'style_page_{category_name}'] = min(total_pages - 1, st.session_state[f'style_page_{category_name}'] + 1)
-                            st.experimental_rerun()
+                            st.rerun()
                     with col_nav3:
                         st.write(f"Página {st.session_state[f'style_page_{category_name}'] + 1} de {total_pages}")
 
