@@ -203,7 +203,7 @@ with col1:
             video_processor_factory=VideoProcessor,
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            #rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
             mode=WebRtcMode.SENDRECV
         )
         
