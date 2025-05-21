@@ -204,16 +204,16 @@ with col1:
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
             #rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-            mode=WebRtcMode.SENDRECV
+            #mode=WebRtcMode.SENDRECV
         )
         
         # Botão para tirar foto
-        if webrtc_ctx.video_processor:
-            if st.button("📸 Tirar Foto"):
-                webrtc_ctx.video_processor.take_snapshot = True
-                st.info("Tirando foto... Aguarde...")
-                time.sleep(1)  # Pequeno delay para capturar a imagem
-                st.rerun()
+#        if webrtc_ctx.video_processor:
+        if st.button("📸 Tirar Foto"):
+            webrtc_ctx.video_processor.take_snapshot = True
+            st.info("Tirando foto... Aguarde...")
+            time.sleep(1)  # Pequeno delay para capturar a imagem
+            st.rerun()
         
         # Se uma foto foi tirada, exiba-a
         if webrtc_ctx.video_processor and webrtc_ctx.video_processor.snapshot is not None:
