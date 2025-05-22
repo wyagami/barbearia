@@ -194,7 +194,7 @@ with col1:
             
             # Exibir a imagem
             st.markdown('<div class="image-container">', unsafe_allow_html=True)
-            st.image(user_image, use_column_width=True)
+            st.image(user_image, use_container_width =True)
             st.markdown('</div>', unsafe_allow_html=True)
     
     else:  # Usar câmera
@@ -227,7 +227,7 @@ with col1:
             
             # Exibir a imagem
             st.markdown('<div class="image-container">', unsafe_allow_html=True)
-            st.image(snap_pil, use_column_width=True)
+            st.image(snap_pil, use_container_width =True)
             st.markdown('</div>', unsafe_allow_html=True)
 
 # Substitua a seção de estilos disponíveis (na col2) por este código:
@@ -322,7 +322,7 @@ with col2:
                                     img = resize_image(img, STANDARD_IMAGE_SIZE)
 
                                     st.markdown('<div class="image-container">', unsafe_allow_html=True)
-                                    st.image(img, caption=style_name, use_column_width=True)
+                                    st.image(img, caption=style_name, use_container_width =True)
                                     st.markdown('</div>', unsafe_allow_html=True)
 
                                     # Botão para selecionar o estilo
@@ -358,13 +358,13 @@ if user_image is not None and st.session_state.get('selected_style') is not None
     with col1:
         st.markdown("**Sua foto:**")
         st.markdown('<div class="image-container">', unsafe_allow_html=True)
-        st.image(user_image, use_column_width=True)
+        st.image(user_image, use_container_width =True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
         st.markdown(f"**Estilo selecionado: {st.session_state['selected_style']['name']}**")
         st.markdown('<div class="image-container">', unsafe_allow_html=True)
-        st.image(st.session_state['selected_style']['image'], use_column_width=True)
+        st.image(st.session_state['selected_style']['image'], use_container_width =True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     # Botão para processar o face swap
