@@ -234,7 +234,7 @@ with col2:
     st.write("Navegue pelos estilos disponíveis:")
 
     # Diretório onde as imagens dos estilos estão armazenadas
-    STYLES_DIR = "styles"  # Altere para o caminho do seu diretório
+    STYLES_DIR = "/styles"  # Altere para o caminho do seu diretório
 
     # Dicionário de estilos organizados por categoria
     style_categories = {
