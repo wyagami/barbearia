@@ -315,13 +315,14 @@ with col2:
                             if os.path.exists(style_path):
                                 with cols[col_idx]:
                                     img = Image.open(style_path)
-                                    # Redimensionar o estilo
+                                    # Redimensionar o estilo para exibição na galeria
                                     img = resize_image(img, STANDARD_IMAGE_SIZE)
 
                                     st.markdown('<div class="image-container">', unsafe_allow_html=True)
                                     st.image(img, caption=style_name, use_column_width=True)
                                     st.markdown('</div>', unsafe_allow_html=True)
 
+                                    # Botão para selecionar o estilo
                                     if st.button(f"Selecionar {style_name}", key=f"style_{category_name}_{style_idx}"):
                                         # Salvar temporariamente a imagem selecionada
                                         temp_style_path = save_temp_image(img)
@@ -332,7 +333,6 @@ with col2:
                                             'category': category_name
                                         }
                                         st.success(f"Estilo '{style_name}' selecionado!")
-
 
 # Seção para processar e exibir o resultado
 st.markdown("---")
@@ -427,6 +427,7 @@ st.markdown("""
 <div style="text-align: center">
     <p>✂️ Barbearia Virtual - Experimente antes de cortar! ✂️</p>
     <p style="font-size: 0.8em;">Esta aplicação usa tecnologia de face swap para visualização de cortes.</p>
+    <p style="font-size: 0.8em;">Desenvolvido por Yagami Tecnologia - Whatsapp: 11-990000425</p>
 </div>
 """, unsafe_allow_html=True)
 
