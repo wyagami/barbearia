@@ -11,6 +11,9 @@ import av
 import cv2
 import numpy as np
 import uuid
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Configuração da página
 st.set_page_config(
@@ -239,7 +242,7 @@ with col2:
     # Dicionário de estilos organizados por categoria
     style_categories = {
         "Clássicos": {
-            "Corte Clássico": "styles/4.jpg",
+            "Corte Clássico": "4.jpg",
             "Side Part": "side_part.jpg",
             "Corte Militar": "militar.jpg"
         },
