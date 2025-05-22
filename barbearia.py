@@ -239,7 +239,7 @@ with col2:
     # Dicionário de estilos organizados por categoria
     style_categories = {
         "Clássicos": {
-            "Corte Clássico": "4.jpg",
+            "Corte Clássico": "styles/4.jpg",
             "Side Part": "side_part.jpg",
             "Corte Militar": "militar.jpg"
         },
