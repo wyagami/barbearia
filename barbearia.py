@@ -81,6 +81,8 @@ if 'camera_image' not in st.session_state:
     st.session_state['camera_image'] = None
 if 'processing' not in st.session_state:
     st.session_state['processing'] = False
+if 'photo_mode' not in st.session_state:
+    st.session_state['photo_mode'] = "Fazer upload de imagem"
 
 # Função para redimensionar imagens mantendo a proporção
 def resize_image(image, target_size):
@@ -146,24 +148,26 @@ def face_swap(source_path, target_path):
 # Função para processar o quadro da webcam
 class VideoProcessor:
     def __init__(self):
-        self.snapshot = None
-        self.take_snapshot = False
+        self.current_frame = None
     
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
         
-        # Se o botão de snapshot foi pressionado, salve a imagem
-        if self.take_snapshot:
-            self.snapshot = img.copy()
-            self.take_snapshot = False
+        # Sempre manter o frame atual
+        self.current_frame = img.copy()
         
         # Desenha um contorno para o rosto, para indicar o posicionamento
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-        
-        for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        try:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+            
+            for (x, y, w, h) in faces:
+                cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                # Adicionar texto indicativo
+                cv2.putText(img, "Rosto detectado", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        except:
+            pass  # Ignorar erros de detecção de rosto
         
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
@@ -179,7 +183,14 @@ with col1:
     
     # Opções para obter a imagem do usuário
     option = st.radio("Como deseja adicionar sua foto?", 
-                      ["Fazer upload de imagem", "Usar câmera"])
+                      ["Fazer upload de imagem", "Usar câmera"],
+                      key="photo_option")
+    
+    # Limpar imagem quando mudar de modo
+    if option != st.session_state['photo_mode']:
+        st.session_state['uploaded_image'] = None
+        st.session_state['camera_image'] = None
+        st.session_state['photo_mode'] = option
     
     if option == "Fazer upload de imagem":
         uploaded_file = st.file_uploader("Envie uma foto sua de frente", type=["jpg", "jpeg", "png"])
@@ -191,10 +202,11 @@ with col1:
             
             # Salvar em session state
             st.session_state['uploaded_image'] = user_image
+            st.session_state['camera_image'] = None  # Limpar imagem da câmera
             
             # Exibir a imagem
             st.markdown('<div class="image-container">', unsafe_allow_html=True)
-            st.image(user_image, use_container_width =True)
+            st.image(user_image, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
     
     else:  # Usar câmera
@@ -202,35 +214,50 @@ with col1:
         
         # Container para o webrtc_streamer
         webrtc_ctx = webrtc_streamer(
-            key="snapshot",
+            key="camera_snapshot",
             video_processor_factory=VideoProcessor,
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
-            #rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-            #mode=WebRtcMode.SENDRECV
+            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
         )
         
-        # Botão para tirar foto
-#        if webrtc_ctx.video_processor:
-        if st.button("📸 Tirar Foto"):
-            webrtc_ctx.video_processor.take_snapshot = True
-            st.info("Tirando foto... Aguarde...")
-            time.sleep(1)  # Pequeno delay para capturar a imagem
-            st.rerun()
+        # Botões para controlar a câmera
+        col_btn1, col_btn2 = st.columns(2)
         
-        # Se uma foto foi tirada, exiba-a
-        if webrtc_ctx.video_processor and webrtc_ctx.video_processor.snapshot is not None:
-            snap = webrtc_ctx.video_processor.snapshot
-            # Redimensionar e converter para PIL Image
-            snap_pil = resize_image(snap, STANDARD_IMAGE_SIZE)
-            st.session_state['camera_image'] = snap_pil
-            
-            # Exibir a imagem
+        with col_btn1:
+            # Botão para tirar foto
+            if st.button("📸 Tirar Foto", key="take_photo"):
+                if webrtc_ctx.video_processor and webrtc_ctx.video_processor.current_frame is not None:
+                    # Capturar o frame atual
+                    current_frame = webrtc_ctx.video_processor.current_frame.copy()
+                    # Redimensionar e converter para PIL Image
+                    snap_pil = resize_image(current_frame, STANDARD_IMAGE_SIZE)
+                    st.session_state['camera_image'] = snap_pil
+                    st.session_state['uploaded_image'] = None  # Limpar upload
+                    st.success("Foto capturada com sucesso!")
+                    st.rerun()
+                else:
+                    st.warning("Câmera não está ativa ou não há frame disponível. Aguarde um momento e tente novamente.")
+        
+        with col_btn2:
+            # Botão para limpar foto
+            if st.button("🗑️ Limpar Foto", key="clear_photo"):
+                st.session_state['camera_image'] = None
+                st.success("Foto removida!")
+                st.rerun()
+        
+        # Exibir a foto capturada se existir
+        if st.session_state['camera_image'] is not None:
+            st.markdown("**Foto capturada:**")
             st.markdown('<div class="image-container">', unsafe_allow_html=True)
-            st.image(snap_pil, use_container_width =True)
+            st.image(st.session_state['camera_image'], use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
-
-# Substitua a seção de estilos disponíveis (na col2) por este código:
+        
+        # Mostrar status da câmera
+        if webrtc_ctx.state.playing:
+            st.success("📹 Câmera ativa - Pronto para tirar foto")
+        else:
+            st.info("📷 Clique em 'START' para iniciar a câmera")
 
 with col2:
     st.markdown("### 💇 Estilos de Corte Disponíveis")
@@ -242,24 +269,55 @@ with col2:
     # Dicionário de estilos organizados por categoria
     style_categories = {
         "Clássicos": {
-            "Corte Clássico": "4.jpg",
-            "Side Part": "side_part.jpg",
-            "Corte Militar": "militar.jpg"
+            "Corte Side Part": "1.png",
+            "Americano 1": "18.png",
+            "Americano 2": "38.png",
+            "Buzzcut 1": "14.png",
+            "Buzzcut 2": "34.png",
+            "Corte Militar 1": "3.png",
+            "Classic Taper 1": "16.png",
+            "Classic Taper 2": "36.png",
+            "Caesar": "21.png",
+            "Under Slicked-Back": "25.png",
+            "Corte Militar 2": "6.png"
         },
         "Modernos": {
-            "Undercut": "6.jpg",
-            "Corte Degradê": "1.jpg",
-            "Fade": "fade.jpg"
+            "Corte Undercut 1": "2.png",
+            "Corte Undercut 2": "10.png",
+            "Corte Undercut 3": "30.png",
+            "Old Money 1": "17.png",
+            "Old Money 2": "37.png",
+            "Pompadour 1": "11.png",
+            "Pompadour 2": "31.png",
+            "Surfista 1": "12.png",
+            "Repicado": "22.png",
+            "Surfista 2": "32.png",
+            "Topete 1": "24.png",
+            "Razor Part 1": "13.png",
+            "Corte com Risco": "41.png",
+            "Razor Part 2": "33.png",
+            "Taper 1": "20.png",
+            "Taper 2": "40.png",
+            "Corte Degradê 1": "4.png",
+            "Mid fade": "26.png",
+            "Low fade 1": "27.png",
+            "Low fade 2": "42.png",
+            "Corte Degradê 2": "7.png"
         },
         "Longos": {
-            "Cabelo Longo": "2.jpg",
-            "Topete": "topete.jpg",
-            "Corte Camadas": "camadas.jpg"
+            "Topete 2": "8.png",
+            "Mullet 1": "15.png",
+            "Mullet 2": "35.png",
+            "Topete 3": "9.png"
         },
         "Ousados": {
-            "Moicano": "moicano.jpg",
-            "Corte Raspado": "raspado.jpg",
-            "Desenhos no Cabelo": "desenhos.jpg"
+            "Quadrado ou Flat Top": "23.png",
+            "Corte Raspado": "5.png",
+            "Corte do Jaca": "28.png",
+            "Fluffy Edgar 1": "29.png",
+            "Fluffy Edgar 2": "43.png",
+            "V 1": "39.png",
+            "V 2": "19.png"
         }
     }
 
@@ -322,7 +380,7 @@ with col2:
                                     img = resize_image(img, STANDARD_IMAGE_SIZE)
 
                                     st.markdown('<div class="image-container">', unsafe_allow_html=True)
-                                    st.image(img, caption=style_name, use_container_width =True)
+                                    st.image(img, caption=style_name, use_container_width=True)
                                     st.markdown('</div>', unsafe_allow_html=True)
 
                                     # Botão para selecionar o estilo
@@ -336,6 +394,7 @@ with col2:
                                             'category': category_name
                                         }
                                         st.success(f"Estilo '{style_name}' selecionado!")
+                                        st.rerun()
 
 # Seção para processar e exibir o resultado
 st.markdown("---")
@@ -347,10 +406,7 @@ source_path = None
 
 if user_image is not None and st.session_state.get('selected_style') is not None:
     # Preparar a imagem do usuário
-    if isinstance(user_image, np.ndarray):  # Se for da câmera (numpy array)
-        source_path = save_temp_image(user_image)
-    else:  # Se for upload (PIL Image)
-        source_path = save_temp_image(user_image)
+    source_path = save_temp_image(user_image)
     
     # Exibir imagens lado a lado
     col1, col2 = st.columns(2)
@@ -358,13 +414,13 @@ if user_image is not None and st.session_state.get('selected_style') is not None
     with col1:
         st.markdown("**Sua foto:**")
         st.markdown('<div class="image-container">', unsafe_allow_html=True)
-        st.image(user_image, use_container_width =True)
+        st.image(user_image, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
         st.markdown(f"**Estilo selecionado: {st.session_state['selected_style']['name']}**")
         st.markdown('<div class="image-container">', unsafe_allow_html=True)
-        st.image(st.session_state['selected_style']['image'], use_container_width =True)
+        st.image(st.session_state['selected_style']['image'], use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     # Botão para processar o face swap
@@ -409,7 +465,7 @@ if user_image is not None and st.session_state.get('selected_style') is not None
                         btn = st.download_button(
                             label="⬇️ Baixar Imagem",
                             data=file,
-                            file_name=f"novo_visual_{uuid.uuid4().hex[:8]}.jpg",
+                            file_name=f"novo_visual_{uuid.uuid4().hex[:8]}.png",
                             mime="image/jpeg"
                         )
             
@@ -423,6 +479,11 @@ else:
         st.info("👆 Primeiro, adicione sua foto usando uma das opções acima.")
     elif st.session_state.get('selected_style') is None:
         st.info("👆 Agora, selecione um estilo de corte da galeria acima.")
+
+# Exibir resultado anterior se existir
+if st.session_state.get('result_image') is not None:
+    st.markdown("### 🎨 Último Resultado")
+    st.image(st.session_state['result_image'], use_container_width=True)
 
 # Rodapé
 st.markdown("---")
