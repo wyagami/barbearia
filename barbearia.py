@@ -269,55 +269,55 @@ with col2:
     # Dicionário de estilos organizados por categoria
     style_categories = {
         "Clássicos": {
-            "Corte Side Part": "1.png",
-            "Americano 1": "18.png",
-            "Americano 2": "38.png",
-            "Buzzcut 1": "14.png",
-            "Buzzcut 2": "34.png",
-            "Corte Militar 1": "3.png",
-            "Classic Taper 1": "16.png",
-            "Classic Taper 2": "36.png",
-            "Caesar": "21.png",
-            "Under Slicked-Back": "25.png",
-            "Corte Militar 2": "6.png"
+            "Corte Side Part": "1.jpg",
+            "Americano 1": "18.jpg",
+            "Americano 2": "38.jpg",
+            "Buzzcut 1": "14.jpg",
+            "Buzzcut 2": "34.jpg",
+            "Corte Militar 1": "3.jpg",
+            "Classic Taper 1": "16.jpg",
+            "Classic Taper 2": "36.jpg",
+            "Caesar": "21.jpg",
+            "Under Slicked-Back": "25.jpg",
+            "Corte Militar 2": "6.jpg"
         },
         "Modernos": {
-            "Corte Undercut 1": "2.png",
-            "Corte Undercut 2": "10.png",
-            "Corte Undercut 3": "30.png",
-            "Old Money 1": "17.png",
-            "Old Money 2": "37.png",
-            "Pompadour 1": "11.png",
-            "Pompadour 2": "31.png",
-            "Surfista 1": "12.png",
-            "Repicado": "22.png",
-            "Surfista 2": "32.png",
-            "Topete 1": "24.png",
-            "Razor Part 1": "13.png",
-            "Corte com Risco": "41.png",
-            "Razor Part 2": "33.png",
-            "Taper 1": "20.png",
-            "Taper 2": "40.png",
-            "Corte Degradê 1": "4.png",
-            "Mid fade": "26.png",
-            "Low fade 1": "27.png",
-            "Low fade 2": "42.png",
-            "Corte Degradê 2": "7.png"
+            "Corte Undercut 1": "2.jpg",
+            "Corte Undercut 2": "10.jpg",
+            "Corte Undercut 3": "30.jpg",
+            "Old Money 1": "17.jpg",
+            "Old Money 2": "37.jpg",
+            "Pompadour 1": "11.jpg",
+            "Pompadour 2": "31.jpg",
+            "Surfista 1": "12.jpg",
+            "Repicado": "22.jpg",
+            "Surfista 2": "32.jpg",
+            "Topete 1": "24.jpg",
+            "Razor Part 1": "13.jpg",
+            "Corte com Risco": "41.jpg",
+            "Razor Part 2": "33.jpg",
+            "Taper 1": "20.jpg",
+            "Taper 2": "40.jpg",
+            "Corte Degradê 1": "4.jpg",
+            "Mid fade": "26.jpg",
+            "Low fade 1": "27.jpg",
+            "Low fade 2": "42.jpg",
+            "Corte Degradê 2": "7.jpg"
         },
         "Longos": {
-            "Topete 2": "8.png",
-            "Mullet 1": "15.png",
-            "Mullet 2": "35.png",
-            "Topete 3": "9.png"
+            "Topete 2": "8.jpg",
+            "Mullet 1": "15.jpg",
+            "Mullet 2": "35.jpg",
+            "Topete 3": "9.jpg"
         },
         "Ousados": {
-            "Quadrado ou Flat Top": "23.png",
-            "Corte Raspado": "5.png",
-            "Corte do Jaca": "28.png",
-            "Fluffy Edgar 1": "29.png",
-            "Fluffy Edgar 2": "43.png",
-            "V 1": "39.png",
-            "V 2": "19.png"
+            "Quadrado ou Flat Top": "23.jpg",
+            "Corte Raspado": "5.jpg",
+            "Corte do Jaca": "28.jpg",
+            "Fluffy Edgar 1": "29.jpg",
+            "Fluffy Edgar 2": "43.jpg",
+            "V 1": "39.jpg",
+            "V 2": "19.jpg"
         }
     }
 
@@ -465,7 +465,7 @@ if user_image is not None and st.session_state.get('selected_style') is not None
                         btn = st.download_button(
                             label="⬇️ Baixar Imagem",
                             data=file,
-                            file_name=f"novo_visual_{uuid.uuid4().hex[:8]}.png",
+                            file_name=f"novo_visual_{uuid.uuid4().hex[:8]}.jpg",
                             mime="image/jpeg"
                         )
             
